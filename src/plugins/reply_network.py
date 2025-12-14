@@ -5,27 +5,27 @@ import matplotlib.pyplot as plt
 
 def run_plugin(data):
     messages = data.get("messages", [])
-    chat_name = data.get("name", "Чат")
+    chat_name = data.get("name", "Chat")
 
     if not messages:
-        st.warning("Нет сообщений для анализа.")
+        st.warning("No messages to analyze.")
         return
 
-    st.subheader(f"Сетевой анализ взаимодействий — {chat_name}")
+    st.subheader(f"Reply Network — {chat_name}")
 
-    # Собираем всех участников
+    # Get all participants
     participants = sorted(set(msg.get("from") for msg in messages if msg.get("from")))
     if not participants:
-        st.warning("Не удалось определить участников.")
+        st.warning("Could not identify participants.")
         return
 
-    # Интерфейс выбора пользователей
-    selected_users = st.multiselect("Выберите пользователей для анализа", participants, default=participants)
+    # User selection
+    selected_users = st.multiselect("Select users", participants, default=participants)
     if not selected_users:
-        st.info("Выберите хотя бы одного пользователя.")
+        st.info("Select at least one user.")
         return
 
-    # Карта: ID сообщения → отправитель
+    # Map: message ID -> sender
     id_to_user = {}
     for msg in messages:
         msg_id = msg.get("id")
@@ -33,7 +33,7 @@ def run_plugin(data):
         if msg_id is not None and sender in selected_users:
             id_to_user[msg_id] = sender
 
-    # Подсчёт взаимодействий (ответов)
+    # Count replies
     interaction_counts = defaultdict(lambda: defaultdict(int))
     for msg in messages:
         sender = msg.get("from")
@@ -45,10 +45,10 @@ def run_plugin(data):
                 interaction_counts[sender][replied_user] += 1
 
     if not interaction_counts:
-        st.info("Нет ответов между выбранными пользователями.")
+        st.info("No replies between selected users.")
         return
 
-    # Построение графа
+    # Build graph
     G = nx.DiGraph()
     for sender, replies in interaction_counts.items():
         for receiver, count in replies.items():
@@ -56,12 +56,11 @@ def run_plugin(data):
 
     plt.figure(figsize=(10, 8))
     pos = nx.circular_layout(G)
-    # pos = nx.spring_layout(G, seed=42)
     raw_weights = [G[u][v]['weight'] for u, v in G.edges()]
     max_weight = max(raw_weights)
     min_weight = min(raw_weights)
 
-    # Избегаем деления на ноль
+    # Avoid division by zero
     if max_weight == min_weight:
         edge_weights = [2 for _ in raw_weights]
     else:
@@ -73,5 +72,5 @@ def run_plugin(data):
     edge_labels = {(u, v): G[u][v]['weight'] for u, v in G.edges()}
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=9)
 
-    plt.title("Кто кому отвечает (среди выбранных пользователей)", fontsize=14)
+    plt.title("Who replies to whom", fontsize=14)
     st.pyplot(plt)

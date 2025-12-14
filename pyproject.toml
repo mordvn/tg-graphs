@@ -1,0 +1,13 @@
+[project]
+name = "tgchatsanalyzer"
+version = "0.1.0"
+description = "A Streamlit-based analyzer for Telegram chat exports with extensible plugin system"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "streamlit>=1.45.0",
+    "matplotlib>=3.10.0",
+    "pandas>=2.3.0",
+    "networkx>=3.4",
+]
+
