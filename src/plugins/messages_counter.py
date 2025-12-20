@@ -11,8 +11,8 @@ def run_plugin(data):
 
     count = defaultdict(int)
     for msg in messages:
-        if 'from' in msg:
-            count[msg['from']] += 1
+        if "from" in msg:
+            count[msg["from"]] += 1
 
     st.write("### Messages per User")
     for user, c in count.items():

@@ -2,6 +2,7 @@ from collections import defaultdict, Counter
 import streamlit as st
 import pandas as pd
 
+
 def run_plugin(data):
     messages = data.get("messages", [])
     chat_name = data.get("name", "Chat")
@@ -41,7 +42,9 @@ def run_plugin(data):
     st.markdown("### 👥 Reactions by User")
     if user_emoji_counts:
         users = sorted(user_emoji_counts.keys())
-        all_emojis = sorted({emoji for counter in user_emoji_counts.values() for emoji in counter})
+        all_emojis = sorted(
+            {emoji for counter in user_emoji_counts.values() for emoji in counter}
+        )
 
         table = []
         for user in users:

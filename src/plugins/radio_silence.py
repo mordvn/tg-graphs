@@ -58,12 +58,14 @@ def run_plugin(data):
         delta = (curr_time - prev_time).total_seconds()
 
         if delta >= SILENCE_THRESHOLD:
-            silence_periods.append({
-                "Start": prev_time.strftime("%Y-%m-%d %H:%M"),
-                "End": curr_time.strftime("%Y-%m-%d %H:%M"),
-                "Duration": human_readable_duration(delta),
-                "Seconds": int(delta)
-            })
+            silence_periods.append(
+                {
+                    "Start": prev_time.strftime("%Y-%m-%d %H:%M"),
+                    "End": curr_time.strftime("%Y-%m-%d %H:%M"),
+                    "Duration": human_readable_duration(delta),
+                    "Seconds": int(delta),
+                }
+            )
 
     if not silence_periods:
         st.success("No gaps longer than 30 hours. Chat is active!")

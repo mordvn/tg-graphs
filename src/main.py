@@ -18,6 +18,7 @@ predefined_plugin_paths = [
     os.path.join(os.path.dirname(__file__), "plugins", "reply_network.py"),
 ]
 
+
 def create_uploaded_file_from_path(path):
     with open(path, "rb") as f:
         content = f.read()
@@ -25,6 +26,7 @@ def create_uploaded_file_from_path(path):
     bytes_io = io.BytesIO(content)
     bytes_io.name = os.path.basename(path)
     return bytes_io
+
 
 st.set_page_config(page_title="Chat Analyzer", layout="wide")
 
@@ -34,7 +36,7 @@ with st.sidebar.expander("Load Chats"):
         type=["json"],
         accept_multiple_files=True,
         key="chats_uploader",
-        label_visibility="visible"
+        label_visibility="visible",
     )
     if uploaded_chats and not isinstance(uploaded_chats, list):
         uploaded_chats = [uploaded_chats]
@@ -45,14 +47,14 @@ with st.sidebar.expander("Plugins"):
         type=["py"],
         accept_multiple_files=True,
         key="plugins_uploader",
-        label_visibility="visible"
+        label_visibility="visible",
     )
     if uploaded_plugins and not isinstance(uploaded_plugins, list):
         uploaded_plugins = [uploaded_plugins]
 
 for path in predefined_plugin_paths:
-        if os.path.exists(path):
-            uploaded_plugins.append(create_uploaded_file_from_path(path))
+    if os.path.exists(path):
+        uploaded_plugins.append(create_uploaded_file_from_path(path))
 
 st.sidebar.title("Chats")
 selected_file = None

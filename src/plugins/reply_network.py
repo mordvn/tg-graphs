@@ -3,6 +3,7 @@ import streamlit as st
 import networkx as nx
 import matplotlib.pyplot as plt
 
+
 def run_plugin(data):
     messages = data.get("messages", [])
     chat_name = data.get("name", "Chat")
@@ -41,7 +42,11 @@ def run_plugin(data):
 
         if sender in selected_users and reply_id:
             replied_user = id_to_user.get(reply_id)
-            if replied_user and replied_user in selected_users and replied_user != sender:
+            if (
+                replied_user
+                and replied_user in selected_users
+                and replied_user != sender
+            ):
                 interaction_counts[sender][replied_user] += 1
 
     if not interaction_counts:
@@ -56,7 +61,7 @@ def run_plugin(data):
 
     plt.figure(figsize=(10, 8))
     pos = nx.circular_layout(G)
-    raw_weights = [G[u][v]['weight'] for u, v in G.edges()]
+    raw_weights = [G[u][v]["weight"] for u, v in G.edges()]
     max_weight = max(raw_weights)
     min_weight = min(raw_weights)
 
@@ -64,12 +69,22 @@ def run_plugin(data):
     if max_weight == min_weight:
         edge_weights = [2 for _ in raw_weights]
     else:
-        edge_weights = [1 + 4 * (w - min_weight) / (max_weight - min_weight) for w in raw_weights]
+        edge_weights = [
+            1 + 4 * (w - min_weight) / (max_weight - min_weight) for w in raw_weights
+        ]
 
-    nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=2000,
-            font_size=10, arrows=True, width=edge_weights)
+    nx.draw(
+        G,
+        pos,
+        with_labels=True,
+        node_color="lightblue",
+        node_size=2000,
+        font_size=10,
+        arrows=True,
+        width=edge_weights,
+    )
 
-    edge_labels = {(u, v): G[u][v]['weight'] for u, v in G.edges()}
+    edge_labels = {(u, v): G[u][v]["weight"] for u, v in G.edges()}
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=9)
 
     plt.title("Who replies to whom", fontsize=14)
