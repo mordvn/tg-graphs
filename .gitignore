@@ -31,3 +31,13 @@ logs/
 .coverage
 htmlcov/
 .pytest_cache/
+
+# Chat exports (personal data!)
+*.json
+!package.json
+chats/
+exports/
+data/
+
+# Cursor/IDE
+.cursor/
