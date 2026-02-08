@@ -11,3 +11,8 @@ dependencies = [
     "networkx>=3.4",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+

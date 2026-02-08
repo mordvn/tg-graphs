@@ -11,7 +11,6 @@ import streamlit as st
 video_path = os.path.join(os.path.dirname(__file__), "..", "images", "instruction.mp4")
 plugins_dir = os.path.join(os.path.dirname(__file__), "plugins")
 
-# Организация плагинов по категориям
 PLUGIN_CATEGORIES = {
     "📊 Основные": {
         "path": plugins_dir,
@@ -21,7 +20,7 @@ PLUGIN_CATEGORIES = {
             ("radio_silence.py", "Паузы в общении"),
             ("reactions_per_user.py", "Реакции"),
             ("reply_network.py", "Сеть ответов"),
-        ]
+        ],
     },
     "💕 Girlfriend Research": {
         "path": os.path.join(plugins_dir, "girlfriend_research"),
@@ -38,7 +37,7 @@ PLUGIN_CATEGORIES = {
             ("message_length_balance.py", "📏 Длина сообщений"),
             ("attachment_style.py", "🧠 Тип привязанности"),
             ("love_language.py", "💕 Языки любви"),
-        ]
+        ],
     },
     "👥 Friend Research": {
         "path": os.path.join(plugins_dir, "friend_research"),
@@ -48,7 +47,7 @@ PLUGIN_CATEGORIES = {
             ("activity_patterns.py", "📈 Паттерны активности"),
             ("contribution_score.py", "🏆 Вклад в общение"),
             ("topic_analysis.py", "💬 Анализ тем"),
-        ]
+        ],
     },
     "🔞 OnlyFans Research": {
         "path": os.path.join(plugins_dir, "girlfriend_research_onlyfans"),
@@ -60,7 +59,7 @@ PLUGIN_CATEGORIES = {
             ("desire_dynamics.py", "💋 Динамика желания"),
             ("flirt_style.py", "😏 Стиль флирта"),
             ("intimacy_calendar.py", "📅 Календарь интимности"),
-        ]
+        ],
     },
 }
 
@@ -100,45 +99,53 @@ selected_plugin_paths = []
 
 for category_name, category_data in PLUGIN_CATEGORIES.items():
     category_path = category_data["path"]
-    
+
     # Skip if category folder doesn't exist
     if not os.path.exists(category_path):
         continue
-    
+
     with st.sidebar.expander(category_name, expanded=False):
         # Select all / Deselect all
         col1, col2 = st.columns(2)
         select_all_key = f"select_all_{category_name}"
-        
+
         # Get available plugins in this category
         available_plugins = []
         for filename, label in category_data["plugins"]:
             plugin_path = os.path.join(category_path, filename)
             if os.path.exists(plugin_path):
                 available_plugins.append((filename, label, plugin_path))
-        
+
         if not available_plugins:
             st.caption("Нет плагинов в этой категории")
             continue
-        
+
         with col1:
-            if st.button("✅ Все", key=f"all_{category_name}", use_container_width=True):
+            if st.button(
+                "✅ Все", key=f"all_{category_name}", use_container_width=True
+            ):
                 for filename, _, _ in available_plugins:
-                    st.session_state.selected_plugins[f"{category_name}_{filename}"] = True
+                    st.session_state.selected_plugins[f"{category_name}_{filename}"] = (
+                        True
+                    )
                 st.rerun()
-        
+
         with col2:
-            if st.button("❌ Очистить", key=f"none_{category_name}", use_container_width=True):
+            if st.button(
+                "❌ Очистить", key=f"none_{category_name}", use_container_width=True
+            ):
                 for filename, _, _ in available_plugins:
-                    st.session_state.selected_plugins[f"{category_name}_{filename}"] = False
+                    st.session_state.selected_plugins[f"{category_name}_{filename}"] = (
+                        False
+                    )
                 st.rerun()
-        
+
         # Individual plugin checkboxes
         for filename, label, plugin_path in available_plugins:
             key = f"{category_name}_{filename}"
             # Default to False (disabled)
             default_value = st.session_state.selected_plugins.get(key, False)
-            
+
             if st.checkbox(label, value=default_value, key=f"cb_{key}"):
                 st.session_state.selected_plugins[key] = True
                 selected_plugin_paths.append(plugin_path)
@@ -182,7 +189,7 @@ if uploaded_chats:
 else:
     st.sidebar.info("Загрузите файл чата")
     st.title("Telegram Chat Analyzer")
-    
+
     st.markdown("""
     ### Как использовать:
     1. Экспортируйте чат из Telegram Desktop (JSON формат)
@@ -195,7 +202,7 @@ else:
     - **💕 Girlfriend Research** — анализ романтических отношений
     - **👥 Friend Research** — анализ дружеского общения
     """)
-    
+
     if os.path.exists(video_path):
         with open(video_path, "rb") as f:
             video_bytes = f.read()
@@ -251,22 +258,27 @@ if data:
     messages_count = len(data.get("messages", []))
     st.title(f"📊 {chat_name}")
     st.caption(f"Всего сообщений: {messages_count}")
-    
+
     # Count selected plugins
     total_selected = len(selected_plugin_paths) + len(uploaded_plugins)
-    
+
     if total_selected == 0:
         st.info("👈 Выберите плагины в боковой панели для анализа")
     else:
         st.markdown(f"**Выбрано плагинов: {total_selected}**")
         st.markdown("---")
-        
+
         # Run predefined plugins
         for plugin_path in selected_plugin_paths:
-            plugin_name = os.path.basename(plugin_path).replace(".py", "").replace("_", " ").title()
+            plugin_name = (
+                os.path.basename(plugin_path)
+                .replace(".py", "")
+                .replace("_", " ")
+                .title()
+            )
             with st.expander(f"📊 {plugin_name}", expanded=True):
                 load_and_run_plugin(plugin_path, data)
-        
+
         # Run custom uploaded plugins
         for plugin in uploaded_plugins:
             with tempfile.NamedTemporaryFile(delete=False, suffix=".py") as tmp_file:
