@@ -2,7 +2,9 @@
 
 A Streamlit-based analyzer for Telegram chat exports with an extensible plugin system for visualizing messaging patterns, activity, and interactions.
 
+<div align="center">
 <img src="images/demo.png" alt="Demo" width="600">
+</div>
 
 ## Features
 
